@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ryder Cup Match Play Tournament</title>
-    <style>
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Ryder Cup Match Play Tournament&lt;/title&gt;
+    &lt;style&gt;
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
@@ -26,143 +27,149 @@
         .tie { color: #ffc107; font-weight: bold; }
         .standings { font-size: 1.2em; }
         .standings th { background: linear-gradient(135deg, #dc3545, #c62828); color: white; }
-        .standings .leader { background: rgba(255,215,0,0.2) !important; font-weight: bold; font-size: 1.3em; }
+        .leader { background: rgba(255,215,0,0.2) !important; font-weight: bold; font-size: 1.3em; }
         button { background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 5px; transition: background 0.3s; }
         button:hover { background: #c62828; }
+        button.calc-btn { background: #28a745; padding: 5px 10px; font-size: 12px; }
+        button.calc-btn:hover { background: #218838; }
         .player-row { cursor: pointer; transition: background 0.2s; }
         .player-row:hover { background: #f5f5f5; }
         .data-management { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 10px; }
-        .data-management h3 { margin-bottom: 15px; }
-        .data-management button { margin: 5px 5px 5px 0; }
-        .timestamp { font-size: 0.9em; color: #666; margin-top: 10px; }
-        @media (max-width: 768px) { 
-            .container { padding: 10px; } 
-            th, td { padding: 8px 4px; font-size: 14px; } 
-            .tab { padding: 10px 15px; font-size: 0.9em; }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🏌️ Ryder Cup Match Play Tournament</h1>
-        
-        <div class="tabs">
-            <button class="tab active" onclick="showTab(event, 'players')">Players</button>
-            <button class="tab" onclick="showTab(event, 'matches')">Matches</button>
-            <button class="tab" onclick="showTab(event, 'standings')">Standings</button>
-        </div>
+        .team-settings { margin-bottom: 20px; padding: 15px; background: #e8f4fd; border-radius: 8px; }
+        .editable { background: #fff3cd; }
+        @media (max-width: 768px) { .container { padding: 10px; } th, td { padding: 8px 4px; font-size: 14px; } .tab { padding: 10px 15px; } }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;h1&gt;🏌️ Ryder Cup Match Play Tournament&lt;/h1&gt;
 
-        <div id="players" class="tab-content active">
-            <div class="section">
-                <h2>Manage Players</h2>
-                <table id="playersTable">
-                    <thead>
-                        <tr>
-                            <th>Player Name</th>
-                            <th>Team</th>
-                            <th>Golf Canada HCP</th>
-                            <th>Trackman HCP</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <button onclick="addPlayer()">+ Add Player</button>
-            </div>
-        </div>
+        &lt;div class=&quot;tabs&quot;&gt;
+            &lt;button class=&quot;tab active&quot; onclick=&quot;showTab(event, 'players')&quot;&gt;Players&lt;/button&gt;
+            &lt;button class=&quot;tab&quot; onclick=&quot;showTab(event, 'matches')&quot;&gt;Matches&lt;/button&gt;
+            &lt;button class=&quot;tab&quot; onclick=&quot;showTab(event, 'standings')&quot;&gt;Standings&lt;/button&gt;
+        &lt;/div&gt;
 
-        <div id="matches" class="tab-content">
-            <div class="section">
-                <h2>Matches (Each player plays 4 matches)</h2>
-                <table id="matchesTable">
-                    <thead>
-                        <tr>
-                            <th>Match #</th>
-                            <th>Format</th>
-                            <th>Red Team Player(s)</th>
-                            <th>Blue Team Player(s)</th>
-                            <th>Result</th>
-                            <th>Points</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <button onclick="addMatch()">+ Add Match</button>
-            </div>
-        </div>
+        &lt;div id=&quot;players&quot; class=&quot;tab-content active&quot;&gt;
+            &lt;div class=&quot;section&quot;&gt;
+                &lt;h2&gt;Manage Players&lt;/h2&gt;
+                &lt;div class=&quot;team-settings&quot;&gt;
+                    &lt;label&gt;Team A Name: &lt;input id=&quot;teamAName&quot; value=&quot;Red&quot; onchange=&quot;updateTeamNames()&quot;&gt;&lt;/label&gt;
+                    &lt;label style=&quot;margin-left: 20px;&quot;&gt;Team B Name: &lt;input id=&quot;teamBName&quot; value=&quot;Blue&quot; onchange=&quot;updateTeamNames()&quot;&gt;&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;table id=&quot;playersTable&quot;&gt;
+                    &lt;thead&gt;
+                        &lt;tr&gt;
+                            &lt;th&gt;Player Name&lt;/th&gt;
+                            &lt;th&gt;Team&lt;/th&gt;
+                            &lt;th&gt;Golf Canada HCP&lt;/th&gt;
+                            &lt;th&gt;Trackman HCP&lt;/th&gt;
+                            &lt;th&gt;Actions&lt;/th&gt;
+                        &lt;/tr&gt;
+                    &lt;/thead&gt;
+                    &lt;tbody&gt;&lt;/tbody&gt;
+                &lt;/table&gt;
+                &lt;button onclick=&quot;addPlayer()&quot;&gt;+ Add Player&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
 
-        <div id="standings" class="tab-content">
-            <div class="section standings">
-                <h2>Live Tournament Standings</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Team</th>
-                            <th>Points</th>
-                            <th>Wins</th>
-                            <th>Losses</th>
-                            <th>Ties</th>
-                            <th>Holes Up (Tiebreaker)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teamStandings">
-                    </tbody>
-                </table>
-                
-                <div style="margin-top: 30px;">
-                    <h3>Individual Player Stats</h3>
-                    <table id="playerStats">
-                        <thead>
-                            <tr>
-                                <th>Player</th>
-                                <th>Team</th>
-                                <th>Matches</th>
-                                <th>Wins</th>
-                                <th>Losses</th>
-                                <th>Ties</th>
-                                <th>Holes Up</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+        &lt;div id=&quot;matches&quot; class=&quot;tab-content&quot;&gt;
+            &lt;div class=&quot;section&quot;&gt;
+                &lt;h2&gt;Matches (Each player plays 4 matches)&lt;/h2&gt;
+                &lt;table id=&quot;matchesTable&quot;&gt;
+                    &lt;thead&gt;
+                        &lt;tr&gt;
+                            &lt;th&gt;#&lt;/th&gt;
+                            &lt;th&gt;Format&lt;/th&gt;
+                            &lt;th&gt;&lt;span id=&quot;teamAHeader&quot;&gt;Red&lt;/span&gt; Team&lt;/th&gt;
+                            &lt;th&gt;&lt;span id=&quot;teamBHeader&quot;&gt;Blue&lt;/span&gt; Team&lt;/th&gt;
+                            &lt;th&gt;Result&lt;/th&gt;
+                            &lt;th&gt;Points&lt;/th&gt;
+                            &lt;th&gt;&lt;/th&gt;
+                        &lt;/tr&gt;
+                    &lt;/thead&gt;
+                    &lt;tbody&gt;&lt;/tbody&gt;
+                &lt;/table&gt;
+                &lt;button onclick=&quot;addMatch()&quot;&gt;+ Add Match&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
 
-                <div class="data-management">
-                    <h3>📊 Data Management</h3>
-                    <button onclick="exportData()">📥 Export Tournament Data (JSON)</button>
-                    <button onclick="importData()">📤 Import Tournament Data</button>
-                    <button onclick="clearData()">🗑️ Reset All Data</button>
-                    <div class="timestamp">Last saved: <span id="timestamp">Never</span></div>
-                </div>
-            </div>
-        </div>
-    </div>
+        &lt;div id=&quot;standings&quot; class=&quot;tab-content&quot;&gt;
+            &lt;div class=&quot;section standings&quot;&gt;
+                &lt;h2&gt;Live Tournament Standings&lt;/h2&gt;
+                &lt;table&gt;
+                    &lt;thead&gt;
+                        &lt;tr&gt;
+                            &lt;th&gt;Team&lt;/th&gt;
+                            &lt;th&gt;Points&lt;/th&gt;
+                            &lt;th&gt;Wins&lt;/th&gt;
+                            &lt;th&gt;Losses&lt;/th&gt;
+                            &lt;th&gt;Ties&lt;/th&gt;
+                            &lt;th&gt;Holes Up (Tiebreaker)&lt;/th&gt;
+                        &lt;/tr&gt;
+                    &lt;/thead&gt;
+                    &lt;tbody id=&quot;teamStandings&quot;&gt;&lt;/tbody&gt;
+                &lt;/table&gt;
 
-    <script>
+                &lt;div style=&quot;margin-top: 30px;&quot;&gt;
+                    &lt;h3&gt;Individual Player Stats&lt;/h3&gt;
+                    &lt;table id=&quot;playerStats&quot;&gt;
+                        &lt;thead&gt;
+                            &lt;tr&gt;
+                                &lt;th&gt;Player&lt;/th&gt;
+                                &lt;th&gt;Team&lt;/th&gt;
+                                &lt;th&gt;Matches&lt;/th&gt;
+                                &lt;th&gt;Wins&lt;/th&gt;
+                                &lt;th&gt;Losses&lt;/th&gt;
+                                &lt;th&gt;Ties&lt;/th&gt;
+                                &lt;th&gt;Holes Up&lt;/th&gt;
+                            &lt;/tr&gt;
+                        &lt;/thead&gt;
+                        &lt;tbody&gt;&lt;/tbody&gt;
+                    &lt;/table&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;data-management&quot;&gt;
+                    &lt;h3&gt;📊 Data Management&lt;/h3&gt;
+                    &lt;button onclick=&quot;exportData()&quot;&gt;📥 Export JSON&lt;/button&gt;
+                    &lt;button onclick=&quot;importData()&quot;&gt;📤 Import JSON&lt;/button&gt;
+                    &lt;button onclick=&quot;clearData()&quot;&gt;🗑️ Reset All&lt;/button&gt;
+                    &lt;div class=&quot;timestamp&quot;&gt;Last saved: &lt;span id=&quot;timestamp&quot;&gt;Loading...&lt;/span&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
         let players = [
-            {name: "Player 1", team: "Red", gchcp: 8.5, thcp: 7.2},
-            {name: "Player 2", team: "Red", gchcp: 12.3, thcp: 11.8},
-            {name: "Player 3", team: "Red", gchcp: 5.1, thcp: 3.9},
-            {name: "Player 4", team: "Red", gchcp: 15.7, thcp: 15.2},
-            {name: "Player 5", team: "Red", gchcp: 22.1, thcp: 21.5},
-            {name: "Player 6", team: "Blue", gchcp: 9.2, thcp: 8.1},
-            {name: "Player 7", team: "Blue", gchcp: 14.6, thcp: 13.9},
-            {name: "Player 8", team: "Blue", gchcp: 6.3, thcp: 4.8},
-            {name: "Player 9", team: "Blue", gchcp: 18.4, thcp: 17.9},
-            {name: "Player 10", team: "Blue", gchcp: 25.8, thcp: 25.1}
+            {name: &quot;Player 1&quot;, team: &quot;Red&quot;, gchcp: 8.5, thcp: 7.8},
+            {name: &quot;Player 2&quot;, team: &quot;Red&quot;, gchcp: -2.3, thcp: -2.7},
+            {name: &quot;Player 3&quot;, team: &quot;Red&quot;, gchcp: 12.1, thcp: 11.0},
+            {name: &quot;Player 4&quot;, team: &quot;Red&quot;, gchcp: 18.7, thcp: 17.1},
+            {name: &quot;Player 5&quot;, team: &quot;Red&quot;, gchcp: 25.2, thcp: 23.0},
+            {name: &quot;Player 6&quot;, team: &quot;Blue&quot;, gchcp: 9.1, thcp: 8.2},
+            {name: &quot;Player 7&quot;, team: &quot;Blue&quot;, gchcp: -1.8, thcp: -2.2},
+            {name: &quot;Player 8&quot;, team: &quot;Blue&quot;, gchcp: 14.6, thcp: 13.3},
+            {name: &quot;Player 9&quot;, team: &quot;Blue&quot;, gchcp: 20.4, thcp: 18.7},
+            {name: &quot;Player 10&quot;, team: &quot;Blue&quot;, gchcp: 28.9, thcp: 26.5}
         ];
-        
         let matches = [];
+        let teamAName = 'Red';
+        let teamBName = 'Blue';
+
+        function formatHandicap(hcp) {
+            if (hcp &gt;= 0) return hcp.toFixed(1);
+            return hcp.toFixed(1);
+        }
 
         function init() {
             loadData();
+            updateTeamNames();
         }
 
         function showTab(event, tabName) {
-            event.preventDefault();
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(el =&gt; el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el =&gt; el.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
         }
@@ -170,15 +177,23 @@
         function renderPlayers() {
             const tbody = document.querySelector('#playersTable tbody');
             tbody.innerHTML = '';
-            players.forEach((player, index) => {
+            players.forEach((player, index) =&gt; {
                 const row = document.createElement('tr');
                 row.className = 'player-row';
                 row.innerHTML = `
-                    <td>${player.name}</td>
-                    <td>${player.team}</td>
-                    <td><input value="${player.gchcp}" onchange="updatePlayer(${index}, 'gchcp', parseFloat(this.value))"></td>
-                    <td><input value="${player.thcp}" onchange="updatePlayer(${index}, 'thcp', parseFloat(this.value))"></td>
-                    <td><button onclick="deletePlayer(${index})">Delete</button></td>
+                    &lt;td contenteditable=&quot;true&quot; onblur=&quot;updatePlayer(${index}, 'name', this.textContent)&quot;&gt;${player.name}&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;select onchange=&quot;updatePlayer(${index}, 'team', this.value)&quot;&gt;
+                            &lt;option value=&quot;${teamAName}&quot; ${player.team === teamAName ? 'selected' : ''}&gt;${teamAName}&lt;/option&gt;
+                            &lt;option value=&quot;${teamBName}&quot; ${player.team === teamBName ? 'selected' : ''}&gt;${teamBName}&lt;/option&gt;
+                        &lt;/select&gt;
+                    &lt;/td&gt;
+                    &lt;td contenteditable=&quot;true&quot; onblur=&quot;updatePlayer(${index}, 'gchcp', parseFloat(this.textContent))&quot;&gt;${formatHandicap(player.gchcp)}&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;span contenteditable=&quot;true&quot; onblur=&quot;updatePlayer(${index}, 'thcp', parseFloat(this.textContent))&quot;&gt;${formatHandicap(player.thcp)}&lt;/span&gt;
+                        &lt;br&gt;&lt;button class=&quot;calc-btn&quot; onclick=&quot;calculateTrackman(${index})&quot;&gt;Calc Trackman&lt;/button&gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;&lt;button onclick=&quot;deletePlayer(${index})&quot;&gt;Delete&lt;/button&gt;&lt;/td&gt;
                 `;
                 tbody.appendChild(row);
             });
@@ -187,18 +202,30 @@
         function addPlayer() {
             const name = prompt('Player Name:');
             if (!name) return;
-            const team = prompt('Team (Red/Blue):') || 'Red';
-            const gchcp = parseFloat(prompt('Golf Canada HCP:') || 15);
-            const thcp = parseFloat(prompt('Trackman HCP (or press Enter for estimate):') || (gchcp - 0.5));
-            
+            const team = prompt('Team:', teamAName) || teamAName;
+            let gchcp = parseFloat(prompt('Golf Canada HCP (+ for plus, - for bogey):') || '15');
+            let thcp = parseFloat(prompt('Trackman HCP:') || calculateTrackmanHCP(gchcp));
+
             players.push({name, team, gchcp, thcp});
             renderPlayers();
             updateStandings();
             saveData();
         }
 
+        function calculateTrackmanHCP(gchcp) {
+            return gchcp * 0.93 - 0.5;
+        }
+
+        function calculateTrackman(index) {
+            players[index].thcp = calculateTrackmanHCP(players[index].gchcp);
+            renderPlayers();
+            saveData();
+        }
+
         function updatePlayer(index, field, value) {
             players[index][field] = value;
+            renderPlayers();
+            updateStandings();
             saveData();
         }
 
@@ -211,59 +238,68 @@
             }
         }
 
+        function updateTeamNames() {
+            teamAName = document.getElementById('teamAName').value || 'Red';
+            teamBName = document.getElementById('teamBName').value || 'Blue';
+            document.getElementById('teamAHeader').textContent = teamAName;
+            document.getElementById('teamBHeader').textContent = teamBName;
+            renderPlayers();
+            renderMatches();
+            updateStandings();
+            saveData();
+        }
+
         function renderMatches() {
             const tbody = document.querySelector('#matchesTable tbody');
             tbody.innerHTML = '';
-            matches.forEach((match, index) => {
+            matches.forEach((match, index) =&gt; {
                 const row = document.createElement('tr');
-                
                 row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>
-                        <select onchange="updateMatch(${index}, 'format', this.value)">
-                            <option ${match.format === 'Singles' ? 'selected' : ''}>Singles</option>
-                            <option ${match.format === 'Fourballs' ? 'selected' : ''}>Fourballs</option>
-                            <option ${match.format === 'Alt Shot' ? 'selected' : ''}>Alt Shot</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select onchange="updateMatch(${index}, 'redPlayer1', this.value)">
-                            <option value="">Select player</option>
-                            ${getPlayerOptions('Red')}
-                        </select>
+                    &lt;td&gt;${index + 1}&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;select onchange=&quot;updateMatch(${index}, 'format', this.value)&quot;&gt;
+                            &lt;option ${match.format === 'Singles' ? 'selected' : ''}&gt;Singles&lt;/option&gt;
+                            &lt;option ${match.format === 'Fourballs' ? 'selected' : ''}&gt;Fourballs&lt;/option&gt;
+                            &lt;option ${match.format === 'Alt Shot' ? 'selected' : ''}&gt;Alt Shot&lt;/option&gt;
+                        &lt;/select&gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;select onchange=&quot;updateMatch(${index}, 'redPlayer1', this.value)&quot;&gt;
+                            &lt;option value=&quot;&quot;&gt;Select ${teamAName}&lt;/option&gt;
+                            ${getPlayerOptions(teamAName, match.redPlayer1)}
+                        &lt;/select&gt;
                         ${match.format === 'Fourballs' ? `
-                            <br><br><select onchange="updateMatch(${index}, 'redPlayer2', this.value)">
-                                <option value="">Select player</option>
-                                ${getPlayerOptions('Red')}
-                            </select>
+                            &lt;br&gt;&lt;select onchange=&quot;updateMatch(${index}, 'redPlayer2', this.value)&quot;&gt;
+                                &lt;option value=&quot;&quot;&gt;Select ${teamAName} 2&lt;/option&gt;
+                                ${getPlayerOptions(teamAName, match.redPlayer2)}
+                            &lt;/select&gt;
                         ` : ''}
-                    </td>
-                    <td>
-                        <select onchange="updateMatch(${index}, 'bluePlayer1', this.value)">
-                            <option value="">Select player</option>
-                            ${getPlayerOptions('Blue')}
-                        </select>
+                    &lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;select onchange=&quot;updateMatch(${index}, 'bluePlayer1', this.value)&quot;&gt;
+                            &lt;option value=&quot;&quot;&gt;Select ${teamBName}&lt;/option&gt;
+                            ${getPlayerOptions(teamBName, match.bluePlayer1)}
+                        &lt;/select&gt;
                         ${match.format === 'Fourballs' ? `
-                            <br><br><select onchange="updateMatch(${index}, 'bluePlayer2', this.value)">
-                                <option value="">Select player</option>
-                                ${getPlayerOptions('Blue')}
-                            </select>
+                            &lt;br&gt;&lt;select onchange=&quot;updateMatch(${index}, 'bluePlayer2', this.value)&quot;&gt;
+                                &lt;option value=&quot;&quot;&gt;Select ${teamBName} 2&lt;/option&gt;
+                                ${getPlayerOptions(teamBName, match.bluePlayer2)}
+                            &lt;/select&gt;
                         ` : ''}
-                    </td>
-                    <td>
-                        <input value="${match.result || ''}" placeholder="4 & 3, 2 up, All Square" 
-                               onchange="updateMatch(${index}, 'result', this.value)">
-                    </td>
-                    <td>${getMatchPoints(match)}</td>
-                    <td><button onclick="deleteMatch(${index})">Delete</button></td>
+                    &lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;input value=&quot;${match.result || ''}&quot; placeholder=&quot;4 &amp; 3, 2 up, All Square&quot; onchange=&quot;updateMatch(${index}, 'result', this.value)&quot;&gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;${getMatchPoints(match)}&lt;/td&gt;
+                    &lt;td&gt;&lt;button onclick=&quot;deleteMatch(${index})&quot;&gt;Delete&lt;/button&gt;&lt;/td&gt;
                 `;
                 tbody.appendChild(row);
             });
         }
 
-        function getPlayerOptions(team) {
-            return players.filter(p => p.team === team).map(p => 
-                `<option value="${p.name}">${p.name} (${p.thcp})</option>`
+        function getPlayerOptions(teamName, currentValue = '') {
+            return players.filter(p =&gt; p.team === teamName).map(p =&gt; 
+                `&lt;option value=&quot;${p.name}&quot; ${p.name === currentValue ? 'selected' : ''}&gt;${p.name} (${formatHandicap(p.thcp)})&lt;/option&gt;`
             ).join('');
         }
 
@@ -281,7 +317,7 @@
         }
 
         function deleteMatch(index) {
-            if (confirm('Delete this match?')) {
+            if (confirm('Delete match?')) {
                 matches.splice(index, 1);
                 renderMatches();
                 updateStandings();
@@ -300,202 +336,150 @@
             if (!result || result.toLowerCase().includes('square') || result.toLowerCase().includes('halve')) {
                 return { win: 0, holes: 0 };
             }
-            
-            // Parse formats like "4 & 3", "2 up", "3 & 2"
-            const match = result.match(/(\d+)/);
-            if (match) {
-                const num = parseInt(match[1]);
-                if (result.toLowerCase().includes('red') || result.match(/^\d+\s*&\s*\d/) || (result.match(/up/) && !result.toLowerCase().includes('blue'))) {
-                    return { win: 1, holes: num };
-                } else {
-                    return { win: -1, holes: num };
+            const numMatch = result.match(/(\d+)/);
+            if (numMatch) {
+                const num = parseInt(numMatch[1]);
+                if (result.includes('&') || (!result.toLowerCase().includes('blue') && result.match(/up/))) {
+                    return { win: 1, holes: num }; // Red wins
                 }
+                return { win: -1, holes: num }; // Blue wins
             }
             return { win: 0, holes: 0 };
         }
 
         function getMatchPoints(match) {
-            const { win, holes } = parseMatchResult(match.result);
-            if (win > 0) return '1 (Red)';
-            if (win < 0) return '1 (Blue)';
-            if (match.result && (match.result.toLowerCase().includes('square') || match.result.toLowerCase().includes('halve'))) return '0.5 each';
+            const { win } = parseMatchResult(match.result);
+            if (win > 0) return '1 (' + teamAName + ')';
+            if (win < 0) return '1 (' + teamBName + ')';
+            if (match.result) return '½ each';
             return '—';
         }
 
         function updateStandings() {
-            const teamStats = { Red: { wins: 0, losses: 0, ties: 0, holes: 0 }, Blue: { wins: 0, losses: 0, ties: 0, holes: 0 } };
+            const teamStats = { [teamAName]: { wins: 0, losses: 0, ties: 0, holes: 0 }, [teamBName]: { wins: 0, losses: 0, ties: 0, holes: 0 } };
             const playerStats = {};
 
-            // Initialize player stats
-            players.forEach(p => {
-                playerStats[p.name] = { team: p.team, matches: 0, wins: 0, losses: 0, ties: 0, holes: 0 };
-            });
+            players.forEach(p =&gt; playerStats[p.name] = { team: p.team, matches: 0, wins: 0, losses: 0, ties: 0, holes: 0 });
 
-            matches.forEach(match => {
+            matches.forEach(match =&gt; {
                 const { win, holes } = parseMatchResult(match.result);
-                
-                if (win > 0) {
-                    // Red wins
-                    teamStats.Red.wins++;
-                    teamStats.Red.holes += holes;
-                    teamStats.Blue.losses++;
-                    teamStats.Blue.holes -= holes;
-                    
-                    [match.redPlayer1, match.redPlayer2].forEach(player => {
-                        if (player && playerStats[player]) {
-                            playerStats[player].matches++;
-                            playerStats[player].wins++;
-                            playerStats[player].holes += holes;
-                        }
-                    });
-                    [match.bluePlayer1, match.bluePlayer2].forEach(player => {
-                        if (player && playerStats[player]) {
-                            playerStats[player].matches++;
-                            playerStats[player].losses++;
-                            playerStats[player].holes -= holes;
-                        }
-                    });
-                } else if (win < 0) {
-                    // Blue wins
-                    teamStats.Blue.wins++;
-                    teamStats.Blue.holes += holes;
-                    teamStats.Red.losses++;
-                    teamStats.Red.holes -= holes;
-                    
-                    [match.redPlayer1, match.redPlayer2].forEach(player => {
-                        if (player && playerStats[player]) {
-                            playerStats[player].matches++;
-                            playerStats[player].losses++;
-                            playerStats[player].holes -= holes;
-                        }
-                    });
-                    [match.bluePlayer1, match.bluePlayer2].forEach(player => {
-                        if (player && playerStats[player]) {
-                            playerStats[player].matches++;
-                            playerStats[player].wins++;
-                            playerStats[player].holes += holes;
-                        }
-                    });
-                } else if (match.result && (match.result.toLowerCase().includes('square') || match.result.toLowerCase().includes('halve'))) {
-                    // Tie
-                    teamStats.Red.ties++;
-                    teamStats.Blue.ties++;
-                    
-                    [match.redPlayer1, match.redPlayer2].forEach(player => {
-                        if (player && playerStats[player]) {
-                            playerStats[player].matches++;
-                            playerStats[player].ties++;
-                        }
-                    });
-                    [match.bluePlayer1, match.bluePlayer2].forEach(player => {
-                        if (player && playerStats[player]) {
-                            playerStats[player].matches++;
-                            playerStats[player].ties++;
-                        }
-                    });
+
+                if (win > 0) { // Team A wins
+                    teamStats[teamAName].wins++; teamStats[teamAName].holes += holes;
+                    teamStats[teamBName].losses++; teamStats[teamBName].holes -= holes;
+                    [match.redPlayer1, match.redPlayer2].forEach(p =&gt; if (p && playerStats[p]) { playerStats[p].matches++; playerStats[p].wins++; playerStats[p].holes += holes; });
+                    [match.bluePlayer1, match.bluePlayer2].forEach(p =&gt; if (p && playerStats[p]) { playerStats[p].matches++; playerStats[p].losses++; playerStats[p].holes -= holes; });
+                } else if (win < 0) { // Team B wins
+                    teamStats[teamBName].wins++; teamStats[teamBName].holes += holes;
+                    teamStats[teamAName].losses++; teamStats[teamAName].holes -= holes;
+                    [match.bluePlayer1, match.bluePlayer2].forEach(p =&gt; if (p && playerStats[p]) { playerStats[p].matches++; playerStats[p].wins++; playerStats[p].holes += holes; });
+                    [match.redPlayer1, match.redPlayer2].forEach(p =&gt; if (p && playerStats[p]) { playerStats[p].matches++; playerStats[p].losses++; playerStats[p].holes -= holes; });
+                } else if (match.result) { // Tie
+                    teamStats[teamAName].ties++; teamStats[teamBName].ties++;
+                    [match.redPlayer1, match.redPlayer2, match.bluePlayer1, match.bluePlayer2].forEach(p =&gt; if (p && playerStats[p]) { playerStats[p].matches++; playerStats[p].ties++; });
                 }
             });
 
-            // Render team standings
-            const redPoints = teamStats.Red.wins + teamStats.Red.ties * 0.5;
-            const bluePoints = teamStats.Blue.wins + teamStats.Blue.ties * 0.5;
-            const isRedLeading = redPoints > bluePoints;
-            const isBlueLeading = bluePoints > redPoints;
+            const teamATotal = teamStats[teamAName].wins + teamStats[teamAName].ties * 0.5;
+            const teamBTotal = teamStats[teamBName].wins + teamStats[teamBName].ties * 0.5;
+            const teamALeader = teamATotal > teamBTotal;
+            const teamBLeader = teamBTotal > teamATotal;
 
-            const teamTbody = document.getElementById('teamStandings');
-            teamTbody.innerHTML = `
-                <tr ${isRedLeading ? 'class="leader"' : ''}>
-                    <td>${isRedLeading ? '🏆 ' : ''}Red Team</td>
-                    <td><strong>${redPoints}</strong></td>
-                    <td>${teamStats.Red.wins}</td>
-                    <td>${teamStats.Red.losses}</td>
-                    <td>${teamStats.Red.ties}</td>
-                    <td>${teamStats.Red.holes}</td>
-                </tr>
-                <tr ${isBlueLeading ? 'class="leader"' : ''}>
-                    <td>${isBlueLeading ? '🏆 ' : ''}Blue Team</td>
-                    <td><strong>${bluePoints}</strong></td>
-                    <td>${teamStats.Blue.wins}</td>
-                    <td>${teamStats.Blue.losses}</td>
-                    <td>${teamStats.Blue.ties}</td>
-                    <td>${teamStats.Blue.holes}</td>
-                </tr>
+            document.getElementById('teamStandings').innerHTML = `
+                &lt;tr ${teamALeader ? 'class=&quot;leader&quot;' : ''}&gt;
+                    &lt;td&gt;${teamALeader ? '🏆 ' : ''}${teamAName}&lt;/td&gt;
+                    &lt;td&gt;&lt;strong&gt;${teamATotal.toFixed(1)}&lt;/strong&gt;&lt;/td&gt;
+                    &lt;td&gt;${teamStats[teamAName].wins}&lt;/td&gt;
+                    &lt;td&gt;${teamStats[teamAName].losses}&lt;/td&gt;
+                    &lt;td&gt;${teamStats[teamAName].ties}&lt;/td&gt;
+                    &lt;td&gt;${teamStats[teamAName].holes}&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr ${teamBLeader ? 'class=&quot;leader&quot;' : ''}&gt;
+                    &lt;td&gt;${teamBLeader ? '🏆 ' : ''}${teamBName}&lt;/td&gt;
+                    &lt;td&gt;&lt;strong&gt;${teamBTotal.toFixed(1)}&lt;/strong&gt;&lt;/td&gt;
+                    &lt;td&gt;${teamStats[teamBName].wins}&lt;/td&gt;
+                    &lt;td&gt;${teamStats[teamBName].losses}&lt;/td&gt;
+                    &lt;td&gt;${teamStats[teamBName].ties}&lt;/td&gt;
+                    &lt;td&gt;${teamStats[teamBName].holes}&lt;/td&gt;
+                &lt;/tr&gt;
             `;
 
-            // Render player stats
             const playerTbody = document.querySelector('#playerStats tbody');
             playerTbody.innerHTML = '';
             Object.entries(playerStats)
-                .filter(([name, stat]) => stat.matches > 0)
-                .sort((a, b) => b[1].wins - a[1].wins || b[1].holes - a[1].holes)
-                .forEach(([name, stat]) => {
+                .filter(([_, stat]) =&gt; stat.matches > 0)
+                .sort((a, b) =&gt; b[1].wins - a[1].wins || b[1].holes - a[1].holes)
+                .forEach(([name, stat]) =&gt; {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${stat.team === 'Red' ? '🔴' : '🔵'} ${name}</td>
-                        <td>${stat.team}</td>
-                        <td>${stat.matches}</td>
-                        <td>${stat.wins}</td>
-                        <td>${stat.losses}</td>
-                        <td>${stat.ties}</td>
-                        <td>${stat.holes}</td>
+                        &lt;td&gt;${stat.team === teamAName ? '🔴' : '🔵'} ${name}&lt;/td&gt;
+                        &lt;td&gt;${stat.team}&lt;/td&gt;
+                        &lt;td&gt;${stat.matches}&lt;/td&gt;
+                        &lt;td&gt;${stat.wins}&lt;/td&gt;
+                        &lt;td&gt;${stat.losses}&lt;/td&gt;
+                        &lt;td&gt;${stat.ties}&lt;/td&gt;
+                        &lt;td&gt;${stat.holes}&lt;/td&gt;
                     `;
                     playerTbody.appendChild(row);
                 });
         }
 
-        // Data persistence
         function saveData() {
-            localStorage.setItem('ryderCupData', JSON.stringify({players, matches}));
-            updateTimestamp();
+            localStorage.setItem('ryderCupData', JSON.stringify({players, matches, teamAName, teamBName}));
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
         }
 
         function loadData() {
             const saved = localStorage.getItem('ryderCupData');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                if (parsed.players) players = parsed.players;
-                if (parsed.matches) matches = parsed.matches;
+                players = parsed.players || players;
+                matches = parsed.matches || matches;
+                teamAName = parsed.teamAName || 'Red';
+                teamBName = parsed.teamBName || 'Blue';
+                document.getElementById('teamAName').value = teamAName;
+                document.getElementById('teamBName').value = teamBName;
             }
             renderPlayers();
             renderMatches();
             updateStandings();
-            updateTimestamp();
-        }
-
-        function updateTimestamp() {
-            document.getElementById('timestamp').textContent = new Date().toLocaleString();
         }
 
         function exportData() {
-            const dataStr = JSON.stringify({players, matches, timestamp: new Date().toISOString()}, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `ryder-cup-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
+            const data = {players, matches, teamAName, teamBName, timestamp: new Date().toISOString()};
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ryder-cup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
         }
 
         function importData() {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
-            input.onchange = e => {
+            input.onchange = e =&gt; {
                 const file = e.target.files[0];
                 const reader = new FileReader();
-                reader.onload = e => {
+                reader.onload = event =&gt; {
                     try {
-                        const data = JSON.parse(e.target.result);
-                        if (data.players) players = data.players;
-                        if (data.matches) matches = data.matches;
+                        const data = JSON.parse(event.target.result);
+                        players = data.players || players;
+                        matches = data.matches || matches;
+                        teamAName = data.teamAName || 'Red';
+                        teamBName = data.teamBName || 'Blue';
+                        document.getElementById('teamAName').value = teamAName;
+                        document.getElementById('teamBName').value = teamBName;
+                        updateTeamNames();
                         renderPlayers();
                         renderMatches();
                         updateStandings();
                         saveData();
-                        alert('✅ Tournament data imported successfully!');
-                    } catch (err) {
-                        alert('❌ Invalid JSON file');
+                        alert('✅ Data imported!');
+                    } catch {
+                        alert('❌ Invalid JSON');
                     }
                 };
                 reader.readAsText(file);
@@ -504,18 +488,13 @@
         }
 
         function clearData() {
-            if (confirm('⚠️ Reset ALL data? This cannot be undone.')) {
+            if (confirm('Reset everything?')) {
                 localStorage.removeItem('ryderCupData');
-                players = [];
-                matches = [];
-                renderPlayers();
-                renderMatches();
-                updateStandings();
-                updateTimestamp();
+                location.reload();
             }
         }
 
         init();
-    </script>
-</body>
-</html>
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
